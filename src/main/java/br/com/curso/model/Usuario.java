@@ -1,12 +1,16 @@
 package br.com.curso.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Usuario implements Serializable {
@@ -23,6 +27,9 @@ public class Usuario implements Serializable {
 	private String login;
 	
 	private String senha;
+	
+	@OneToMany(mappedBy = "usuario", orphanRemoval = true, cascade = CascadeType.ALL)
+	private List<Telefone> telefones = new ArrayList<Telefone>();
 	 
 	public Long getId() {
 		return id;

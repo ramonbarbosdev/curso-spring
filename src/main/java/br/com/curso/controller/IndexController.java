@@ -57,7 +57,6 @@ public class IndexController {
 	@PutMapping(value="/" , produces = "application/json")
 	public ResponseEntity<Usuario> atualizar(@RequestBody Usuario usuario)
 	{
-		/*outras rotinas..*/
 		
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
 		
