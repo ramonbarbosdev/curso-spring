@@ -22,7 +22,7 @@ public class Telefone {
 	
 	@JsonIgnore
 	@ForeignKey(name = "usuario_id")
-	@ManyToOne
+	@ManyToOne(optional = false) /*Obrigatoriedade*/
 	private Usuario usuario;
 
 	public Long getId() {
