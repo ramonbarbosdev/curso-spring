@@ -64,6 +64,12 @@ public class IndexController {
 	public ResponseEntity<Usuario> atualizar(@RequestBody Usuario usuario)
 	{
 		
+		/*Quando tiver filhos relacionados (detalhes)*/
+		for (int pos = 0; pos < usuario.getTelefones().size(); pos ++)
+		{
+			usuario.getTelefones().get(pos).setUsuario(usuario);
+		}
+		
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
 		
 		return new ResponseEntity<Usuario>(usuarioSalvo, HttpStatus.OK);
