@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+
+	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+</head>
+<body>
+
+
+	<script>
+	    $(document).ready(function () {
+	        $.ajax({
+	            url: "http://localhost:8080/curso-spring/usuario/",
+	            type: "GET",
+	            contentType: "application/json",
+	            success: function (data) {
+	                //console.log("Requisição bem-sucedida!", data);
+	            },
+	            error: function (xhr, status, error) {
+	              //  console.error("Erro na requisição:", status, error);
+	            }
+	        });
+	    });
+	</script>
+	
+</body>
+</html>

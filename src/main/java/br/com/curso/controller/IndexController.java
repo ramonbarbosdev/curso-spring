@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.curso.model.Usuario;
 import br.com.curso.repository.UsuarioRepository;
 
+@CrossOrigin(origins = "*")
 @RestController /*ARQUITETURA REST*/
 @RequestMapping(value = "/usuario")
 public class IndexController {
@@ -38,6 +40,7 @@ public class IndexController {
 		return new ResponseEntity(usuario.get(), HttpStatus.OK);
 	}
 	
+
 	@GetMapping(value = "/", produces = "application/json")
 	public ResponseEntity<List<Usuario>> usuario ()
 	{
