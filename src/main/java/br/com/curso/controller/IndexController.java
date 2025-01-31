@@ -21,7 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.curso.model.Usuario;
 import br.com.curso.repository.UsuarioRepository;
 
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:8080")
 @RestController /*ARQUITETURA REST*/
 @RequestMapping(value = "/usuario")
 public class IndexController {
@@ -39,7 +40,6 @@ public class IndexController {
 		
 		return new ResponseEntity(usuario.get(), HttpStatus.OK);
 	}
-	
 
 	@GetMapping(value = "/", produces = "application/json")
 	public ResponseEntity<List<Usuario>> usuario ()
