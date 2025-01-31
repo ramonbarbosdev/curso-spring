@@ -22,7 +22,6 @@ import br.com.curso.model.Usuario;
 import br.com.curso.repository.UsuarioRepository;
 
 //@CrossOrigin(origins = "*")
-@CrossOrigin(origins = "http://localhost:8080")
 @RestController /*ARQUITETURA REST*/
 @RequestMapping(value = "/usuario")
 public class IndexController {
