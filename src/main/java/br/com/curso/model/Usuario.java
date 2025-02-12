@@ -2,18 +2,31 @@ package br.com.curso.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+
+
+import org.hibernate.annotations.ForeignKey;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-public class Usuario implements Serializable {
+public class Usuario implements UserDetails {
 	
 	/**
 	 * 
@@ -45,6 +58,29 @@ public class Usuario implements Serializable {
 	{
 		this.telefones = telefones;
 	}
+	
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinTable( name = "usuarios_role",
+				uniqueConstraints = @UniqueConstraint(
+													columnNames = {"usuario_id", "role_id"},
+													name = "unique_role_user"
+													),
+				joinColumns = @JoinColumn(
+										name = "usuario_id", 
+										referencedColumnName = "id", 
+										table = "usuario",
+										foreignKey = @jakarta.persistence.ForeignKey(name = "usuario_fk", value =  ConstraintMode.CONSTRAINT)
+														),
+				inverseJoinColumns = @JoinColumn(name = "role_id",
+												referencedColumnName = "id",
+												table = "role",
+												foreignKey = @jakarta.persistence.ForeignKey(name = "role_fk", value =  ConstraintMode.CONSTRAINT)
+												
+												)								
+				)
+	private List<Role> roles;
+	
+	
 	/*Relacionamento Um pra muitos - Fim */
 	 
 	public Long getId() {
@@ -96,7 +132,51 @@ public class Usuario implements Serializable {
 		Usuario other = (Usuario) obj;
 		return Objects.equals(id, other.id);
 	}
+
+	/*Autorização / Permissao / Autenticacao*/
+	//São os acessos do usuario ROLE_ADMIN, ROLE_FUNCIONARIO..
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		
+		return null;
+	}
+
+	@Override
+	public String getPassword() {
+		
+		return this.senha;
+	}
+
+	@Override
+	public String getUsername() {
+		
+		return this.login;
+	}
 	
+	@Override
+	public boolean isAccountNonExpired() {
+		
+		//return UserDetails.super.isAccountNonExpired();
+		return true;
+	}
 	
+	@Override
+	public boolean isAccountNonLocked() {
+		
+		//return UserDetails.super.isAccountNonLocked();
+		return true;
+	}
+	@Override
+	public boolean isCredentialsNonExpired() {
+		
+		//return UserDetails.super.isCredentialsNonExpired();
+		return true;
+	}
 	
+	@Override
+	public boolean isEnabled() {
+		
+		//return UserDetails.super.isEnabled();
+		return true;
+	}
 }
