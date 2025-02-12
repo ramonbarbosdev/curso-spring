@@ -69,13 +69,15 @@ public class Usuario implements UserDetails {
 										name = "usuario_id", 
 										referencedColumnName = "id", 
 										table = "usuario",
+										unique = false,										
 										foreignKey = @jakarta.persistence.ForeignKey(name = "usuario_fk", value =  ConstraintMode.CONSTRAINT)
-														),
+										),
 				inverseJoinColumns = @JoinColumn(name = "role_id",
 												referencedColumnName = "id",
 												table = "role",
-												foreignKey = @jakarta.persistence.ForeignKey(name = "role_fk", value =  ConstraintMode.CONSTRAINT)
-												
+												unique = false,
+												//updatable = false,
+												foreignKey = @jakarta.persistence.ForeignKey(name = "role_fk", value =  ConstraintMode.CONSTRAINT)											
 												)								
 				)
 	private List<Role> roles;
