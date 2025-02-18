@@ -59,7 +59,7 @@ public class Usuario implements UserDetails {
 		this.telefones = telefones;
 	}
 	
-	@OneToMany(fetch = FetchType.LAZY)
+	@OneToMany(fetch = FetchType.EAGER)
 	@JoinTable( name = "usuarios_role",
 				uniqueConstraints = @UniqueConstraint(
 													columnNames = {"usuario_id", "role_id"},
@@ -140,7 +140,7 @@ public class Usuario implements UserDetails {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		
-		return null;
+		return roles;
 	}
 
 	@Override

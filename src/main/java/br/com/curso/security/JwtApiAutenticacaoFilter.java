@@ -11,25 +11,32 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-/*Filtro onde todas as requisicoes serão capturadas para autenticar*/
+//Filtro onde todas as requisicoes serão capturadas para autenticar
 public class JwtApiAutenticacaoFilter  extends GenericFilterBean{
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
+		
+	   // System.out.println("Filtro de autenticação iniciado.");
+		 // Verifica se já existe um usuário autenticado
+        if (SecurityContextHolder.getContext().getAuthentication() == null)
+        {
+            
+            // Se não houver autenticação, tenta autenticar com JWT
+            Authentication authentication = new JWTTokenAutenticacaoService()
+                    .getAuthentication((HttpServletRequest) request, (HttpServletResponse) response);
 
-		//Estabelece a autenticacao para a requisicao
-		
-		Authentication authentication = new JWTTokenAutenticacaoService().getAuthentication((HttpServletRequest) request);		
-		
-		//Coloca o processo de autenticacao no spring security
-		
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		
-		//Continua o processo
-		
-		chain.doFilter(request, response);
+            // Define a autenticação no contexto do Spring Security, se for válida
+            if (authentication != null) {
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        }
+
+        // Continua o fluxo normal
+        chain.doFilter(request, response);
 	}
 
 }
