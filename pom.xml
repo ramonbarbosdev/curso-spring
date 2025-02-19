@@ -89,8 +89,14 @@
 	        <scope>runtime</scope> <!-- A serialização só é necessária em tempo de execução -->
 	    </dependency>
 		<!--Security-->
-				
 		
+		<!--Pool de conexão-->
+		<dependency>
+		    <groupId>com.zaxxer</groupId>
+		    <artifactId>HikariCP</artifactId>
+		    <version>3.4.0</version>
+		</dependency>		
+		<!--Pool de conexão-->
 	</dependencies>
 
 	<build>

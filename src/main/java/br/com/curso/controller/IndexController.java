@@ -76,13 +76,12 @@ public class IndexController {
 		
 		if (userTemporario == null)
 		{
-	        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-	                .body("{\"error\": \"Usuário não encontrado.\"}");
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\": \"Usuário não encontrado.\"}");
 	    }
 		
-	    if (usuario.getSenha() == null || usuario.getSenha().trim().isEmpty()) {
-	        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-	                .body("{\"error\": \"Senha inválida. Não pode ser vazia.\"}");
+	    if (usuario.getSenha() == null || usuario.getSenha().trim().isEmpty())
+	    {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"Senha inválida. Não pode ser vazia.\"}");
 	    }
 		
 		if (!userTemporario.getSenha().equals(usuario.getSenha()))
