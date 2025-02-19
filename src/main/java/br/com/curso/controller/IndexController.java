@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,19 +58,37 @@ public class IndexController {
 			usuario.getTelefones().get(pos).setUsuario(usuario);
 		}
 		
+		String senhacriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
+		usuario.setSenha(senhacriptografada);
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
 		
 		return new ResponseEntity<Usuario>(usuarioSalvo, HttpStatus.OK);
 	}
 	
 	@PutMapping(value="/" , produces = "application/json")
-	public ResponseEntity<Usuario> atualizar(@RequestBody Usuario usuario)
+	public ResponseEntity<?> atualizar(@RequestBody Usuario usuario)
 	{
 		
 		/*Quando tiver filhos relacionados (detalhes)*/
-		for (int pos = 0; pos < usuario.getTelefones().size(); pos ++)
+		 usuario.getTelefones().forEach(telefone -> telefone.setUsuario(usuario));
+	
+		Usuario userTemporario = usuarioRepository.findUserByLogin(usuario.getLogin());
+		
+		if (userTemporario == null)
 		{
-			usuario.getTelefones().get(pos).setUsuario(usuario);
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                .body("{\"error\": \"Usuário não encontrado.\"}");
+	    }
+		
+	    if (usuario.getSenha() == null || usuario.getSenha().trim().isEmpty()) {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+	                .body("{\"error\": \"Senha inválida. Não pode ser vazia.\"}");
+	    }
+		
+		if (!userTemporario.getSenha().equals(usuario.getSenha()))
+		{
+			String senhacriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
+			usuario.setSenha(senhacriptografada);
 		}
 		
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);

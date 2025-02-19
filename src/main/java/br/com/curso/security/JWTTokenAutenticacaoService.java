@@ -37,8 +37,7 @@ public class JWTTokenAutenticacaoService {
     private static final String HEADER_STRING = "Authorization";
 
     // Chave secreta forte
-    
-   // private static final String SECRET = "*UmaSenhaSuperSecretaComPeloMenos64CaracteresParaHS512"; // A chave secreta
+
     private static final SecretKey SECRET = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     public void addAuthentication(HttpServletResponse response, String username) throws Exception {

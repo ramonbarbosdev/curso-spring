@@ -24,7 +24,8 @@ public class WebConfigSecurity {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
-        http
+      
+    	http
             .csrf(csrf -> csrf.disable())  // Desabilita CSRF (necessário para APIs stateless)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/index", "/login").permitAll()  // Permite acesso público para a página inicial e login
