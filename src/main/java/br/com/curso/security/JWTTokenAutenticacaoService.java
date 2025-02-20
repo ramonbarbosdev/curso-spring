@@ -116,10 +116,15 @@ public class JWTTokenAutenticacaoService {
             }
             catch (Exception e)
             {
-                // Token inválido ou expirado
-                System.out.println("Erro na autenticação: " + e.getMessage());
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return null;
+            	 System.out.println("Erro na autenticação: " + e.getMessage());
+        		 try {
+					response.getOutputStream().println("TOKEN expirado, faça um novo login!");
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}             
+        
+            		 
             }
         }
         
