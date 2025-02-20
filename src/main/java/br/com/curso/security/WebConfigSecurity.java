@@ -3,6 +3,7 @@ package br.com.curso.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,8 +29,8 @@ public class WebConfigSecurity {
     	http
             .csrf(csrf -> csrf.disable())  // Desabilita CSRF (necessário para APIs stateless)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/index", "/login").permitAll()  // Permite acesso público para a página inicial e login
-                .anyRequest().authenticated()  // Exige autenticação para qualquer outra URL
+            		.requestMatchers(HttpMethod.OPTIONS,"/**", "/index", "/login").permitAll()   // Permite acesso público
+            	    .anyRequest().authenticated() 
             )
             .logout(logout -> logout
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))  // Define o caminho para logout
