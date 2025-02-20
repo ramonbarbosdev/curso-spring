@@ -3,11 +3,14 @@ package br.com.curso.security;
 import java.io.IOException;
 import java.util.Date;
 
-
-
+import org.apache.logging.log4j.util.Base64Util;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Service;
+import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
+
+import com.fasterxml.jackson.databind.deser.Deserializers.Base;
 
 import br.com.curso.ApplicationContextLoad;
 import br.com.curso.model.Usuario;
@@ -21,9 +24,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import io.jsonwebtoken.security.Keys;
 import javax.crypto.SecretKey;
-
-
-
+import javax.crypto.spec.SecretKeySpec;
 
 @Service
 public class JWTTokenAutenticacaoService {
@@ -38,14 +39,28 @@ public class JWTTokenAutenticacaoService {
 
     // Chave secreta forte
 
-    private static final SecretKey SECRET = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    private static final String SECRET_KEY_BASE64 = "HaqrDaAaICtFZNXjm5Q3dPNgAZX+bnf6efMy2HuIO1Iq928rcmtTltoAFhsROHxN\r\nwtcHjB6FWudgjqxBMXAP8w==";
+    
+  
+    public static SecretKeySpec createSecretKey()
+    {
+  
+    	 String cleanedKey = SECRET_KEY_BASE64.replaceAll("\\s", "");
 
+         byte[] decodedKey = java.util.Base64.getDecoder().decode(cleanedKey); 
+
+
+         return new SecretKeySpec(decodedKey,  "HmacSHA512");
+    }
     public void addAuthentication(HttpServletResponse response, String username) throws Exception {
-        // Geração de token
+      
+    	SecretKeySpec secretKey = createSecretKey();
+    	
+    	// Geração de token
         String JWT = Jwts.builder()
                 .setSubject(username)
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS512, SECRET) // Usando chave simples
+                .signWith(SignatureAlgorithm.HS512, secretKey) // Usando chave simples
                 .compact();
         
         String token = TOKEN_PREFIX + " " + JWT;
@@ -56,41 +71,55 @@ public class JWTTokenAutenticacaoService {
     // Retorna o usuário validado com token ou, caso não seja válido, retorna null
     public Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response) {
        
+    	SecretKeySpec secretKey = createSecretKey();
+    	
     	String token = request.getHeader(HEADER_STRING);
     	//System.out.println("Token recebido: " + token);  
     	
         if (token != null && token.startsWith(TOKEN_PREFIX))
         {
         	
-                // Remove o prefixo "Bearer " e faz o parsing do token
-                String jwt = token.replace(TOKEN_PREFIX, "").trim();
+            // Remove o prefixo "Bearer " e faz o parsing do token
+            String jwt = token.replace(TOKEN_PREFIX, "").trim();
 
-                try {
-                    String user = Jwts.parserBuilder()
-                            .setSigningKey(SECRET)
-                            .build()
-                            .parseClaimsJws(jwt)  // Use a variável `jwt`
-                            .getBody()
-                            .getSubject();
+            try
+            {
+                String user = Jwts.parserBuilder()
+                        .setSigningKey(secretKey)
+                        .build()
+                        .parseClaimsJws(jwt)  // Use a variável `jwt`
+                        .getBody()
+                        .getSubject();
 
-                    if (user != null) {
-                        Usuario usuario = ApplicationContextLoad.getApplicationContext()
-                                .getBean(UsuarioRepository.class)
-                                .findUserByLogin(user);
+                if (user != null)
+                {
+                    Usuario usuario = ApplicationContextLoad.getApplicationContext()
+                            .getBean(UsuarioRepository.class)
+                            .findUserByLogin(user);
 
-                        if (usuario != null) {
-                            return new UsernamePasswordAuthenticationToken(
-                                    usuario.getLogin(),
-                                    usuario.getSenha(),
-                                    usuario.getAuthorities());
-                        }
+                    if (usuario != null)
+                    {
+                    	//comparar o token gerado com o token no banco de dados
+                    	if(jwt.equalsIgnoreCase(usuario.getToken())) 
+                    	{
+                    		 return new UsernamePasswordAuthenticationToken(
+                                     usuario.getLogin(),
+                                     usuario.getSenha(),
+                                     usuario.getAuthorities());
+                    	}
+                    	
+                       
                     }
-                } catch (Exception e) {
-                    // Token inválido ou expirado
-                    System.out.println("Erro na autenticação: " + e.getMessage());
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    return null;
                 }
+                
+            }
+            catch (Exception e)
+            {
+                // Token inválido ou expirado
+                System.out.println("Erro na autenticação: " + e.getMessage());
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return null;
+            }
         }
 
         // Não autorizado

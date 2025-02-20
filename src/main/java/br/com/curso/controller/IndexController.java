@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,8 @@ public class IndexController {
 	/*SERVIÇO RESTFULL*/
 	
 	@GetMapping(value = "/{id}", produces = "application/json")
+	@CacheEvict(value = "cacheuser", allEntries = true)
+	@CachePut("cacheuser")
 	public ResponseEntity<Usuario> init(@PathVariable (value="id") Long id )
 	{
 		
@@ -43,14 +47,12 @@ public class IndexController {
 	}
 
 	@GetMapping(value = "/", produces = "application/json")
-	@Cacheable("cacheusuario")
+	@CacheEvict(value = "cacheusuario", allEntries = true) //remover cache nao utilizado
+	@CachePut("cacheusuario") //atualizar cache
 	public ResponseEntity<List<Usuario>> usuario () throws InterruptedException
 	{
 		List<Usuario> list = (List<Usuario>) usuarioRepository.findAll();
-		
-		//segura o codigo por 6 segundos simulando um processo lento
-		Thread.sleep(6000);
-		
+				
 		return new ResponseEntity<List<Usuario>>(list, HttpStatus.OK);
 	}
 	

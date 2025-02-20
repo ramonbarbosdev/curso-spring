@@ -47,21 +47,15 @@ public class Usuario implements UserDetails {
 	
 	private String nome;
 	
+	private String token = "";
 	
-	
+
+
 	/*Relacionamento Um pra muitos - Inicio */
 	@OneToMany(mappedBy = "usuario", orphanRemoval = true, cascade = CascadeType.ALL)
 	private List<Telefone> telefones = new ArrayList<Telefone>();
 	
-	public List<Telefone> getTelefones()
-	{
-		return telefones;
-	}
 	
-	public void setTelefones(List<Telefone> telefones)
-	{
-		this.telefones = telefones;
-	}
 	
 	@OneToMany(fetch = FetchType.EAGER)
 	@JoinTable( name = "usuarios_role",
@@ -88,6 +82,26 @@ public class Usuario implements UserDetails {
 	
 	
 	/*Relacionamento Um pra muitos - Fim */
+	
+	
+	
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+	
+	public List<Telefone> getTelefones()
+	{
+		return telefones;
+	}
+	
+	public void setTelefones(List<Telefone> telefones)
+	{
+		this.telefones = telefones;
+	}
 	 
 	public Long getId() {
 		return id;
