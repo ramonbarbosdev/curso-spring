@@ -65,6 +65,11 @@ public class JWTTokenAutenticacaoService {
         
         String token = TOKEN_PREFIX + " " + JWT;
         response.addHeader(HEADER_STRING, token);
+        
+        ApplicationContextLoad.getApplicationContext()
+						        .getBean(UsuarioRepository.class)
+						        .atualizarTokenUser(JWT, username);
+        
         liberacaoCors(response);
         response.getWriter().write("{\"Authorization\": \"" + token + "\"}");
     }
